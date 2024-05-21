@@ -1,0 +1,3 @@
+/mnt/sda1/Projetinhos/LSCAD/TSP_Dynamic/CMakeFiles/tsp_dynamic.dir
+/mnt/sda1/Projetinhos/LSCAD/TSP_Dynamic/CMakeFiles/edit_cache.dir
+/mnt/sda1/Projetinhos/LSCAD/TSP_Dynamic/CMakeFiles/rebuild_cache.dir
