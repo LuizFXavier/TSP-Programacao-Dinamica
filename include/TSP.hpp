@@ -17,11 +17,12 @@ private:
 public:
     TSP(std::string fileName);
     double calculaCaminho();
+    double calculaSub_Rota(int k, std::set<int> caminho);
 
 private:
-    double calculaSub_Rota(int k, std::set<int> caminho);
     double calculaDistancia(int c1, int c2);
     double buscaSub_rota(int k, std::set<int> c_buscado);
-    void guardaSub_rota(int k, std::set<int> c_novo);
+    void guardaSub_rota(int k, std::set<int> c_novo, double dist);
+    std::set<int> remove_elm_caminho(std::set<int> caminho, int i);
     // unsigned numSubConj();
 };
