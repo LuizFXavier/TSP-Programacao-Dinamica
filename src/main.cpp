@@ -13,7 +13,7 @@ int main(int argc, char * argv[]){
     TSP tsp{argv[1]};
     std::set<int> sas;
 
-    for (int i = 1; i < 9; i++){
+    for (int i = 1; i < tsp.nCidades; i++){
         sas.insert(i);
     }
 
