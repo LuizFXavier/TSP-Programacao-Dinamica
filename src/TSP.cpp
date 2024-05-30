@@ -19,13 +19,27 @@ TSP::TSP(std::string fileName)
 
     file.close();
 
-    distancias_Armazenadas.resize(nCidades);
+    rotas_Armazenadas.resize(nCidades);
     for (int i = 0; i < nCidades; i++){
-        distancias_Armazenadas[i].resize(nCidades);
+        rotas_Armazenadas[i].resize(nCidades);
     }
 }
 
-double TSP::calculaSub_Rota(int k, std::set<int> caminho)
+pair<string, double> TSP::calculaCaminho()
+{
+    pair<string, double> res;
+    std::set<int> cidades;
+
+    for (int i = 1; i < nCidades; i++){
+        cidades.insert(i);
+    }
+    res = calculaSub_Rota(primeiraCidade, cidades);
+
+    res.first.pop_back();
+    return res;
+}
+
+pair<string, double> TSP::calculaSub_Rota(int k, std::set<int> caminho)
 {   
     
     for (int i = 0; i < caminho.size() * 10; i++)
@@ -37,23 +51,30 @@ double TSP::calculaSub_Rota(int k, std::set<int> caminho)
     std::cout << "} \n";
 
     if(caminho.size() == 0){
+
         std::cout<<"Base! ";
         std::cout << calculaDistancia(k, primeiraCidade) << "\n";
-        return calculaDistancia(k, primeiraCidade);
+        return { to_string(primeiraCidade) + "-" + to_string(k) + "-" , calculaDistancia(k, primeiraCidade) };
     }
 
     std::string chave_caminho = caminho_toString(caminho);
 
-    double resposta = buscaSub_rota(k, caminho.size(), chave_caminho);
+    std::pair<string, double> resposta = buscaSub_rota(k, caminho.size(), chave_caminho);
     
-    if(resposta == INFINITO){
+    if(resposta.second == INFINITO){
         std::cout << "Foi buscar!\n";
         double temp;
+        std::pair<string, double> aux;
         for(int i : caminho){
+            aux = calculaSub_Rota(i, remove_elm_caminho(caminho, i));
+            temp = aux.second + calculaDistancia(k,i);
             
-            temp = calculaSub_Rota(i, remove_elm_caminho(caminho, i)) + calculaDistancia(k,i);
-            
-            resposta = temp < resposta ? temp:resposta;
+            if(resposta.second > temp){
+                aux.first += to_string(k) + "-";
+                aux.second = temp;
+
+                resposta = aux;
+            }
         }
         guardaSub_rota(k, caminho.size(), chave_caminho, resposta);
     }
@@ -69,22 +90,23 @@ double TSP::calculaDistancia(int c1, int c2)
     return std::sqrt(pow(cidades[c1].x - cidades[c2].x, 2) + pow(cidades[c1].y - cidades[c2].y, 2));
 }
 
-double TSP::buscaSub_rota(int k, int tam, std::string c_buscado)
+pair<string, double> TSP::buscaSub_rota(int k, int tam, std::string c_buscado)
 {   
     
     std::cout<<"Busca [" << k << "][" << tam <<"]: " << "\n";
-    double res = distancias_Armazenadas[k][tam][c_buscado];
+    std::pair<string, double> res;
+    res = rotas_Armazenadas[k][tam][c_buscado];
 
-    if(res == 0){
-        res = INFINITO;
+    if(res.second == 0){
+        res.second = INFINITO;
     }
     std::cout<<"\n";
     return res;
 }
 
-void TSP::guardaSub_rota(int k, int tam,std::string c_novo, double dist)
+void TSP::guardaSub_rota(int k, int tam,std::string c_novo, std::pair<string, double> rota)
 {   
-    distancias_Armazenadas[k][tam][c_novo] = dist;
+    rotas_Armazenadas[k][tam][c_novo] = rota;
 
 }
 

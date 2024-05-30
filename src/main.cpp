@@ -11,13 +11,10 @@ int main(int argc, char * argv[]){
     }
 
     TSP tsp{argv[1]};
-    std::set<int> sas;
+    
+    std::pair<string, double> a = tsp.calculaCaminho();
 
-    for (int i = 1; i < tsp.nCidades; i++){
-        sas.insert(i);
-    }
-
-    cout <<tsp.calculaSub_Rota(0,sas)<< "\n";
+    cout <<a.first<< " " << a.second<< "\n";
 
     return 0;
 }
