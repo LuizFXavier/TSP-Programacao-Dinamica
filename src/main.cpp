@@ -6,6 +6,7 @@ using namespace std;
 
 int main(int argc, char * argv[]){
     
+    //Necessário o arquivo com as coordenadas na linha de comando
     if(argc < 1){
         return EXIT_FAILURE;
     }

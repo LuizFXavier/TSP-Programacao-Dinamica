@@ -5,6 +5,8 @@
 
 TSP::TSP(std::string fileName)
 {
+    //Leitura inicial das coordenadas
+
     std::ifstream file(fileName);
 
     file >> nCidades;
@@ -19,12 +21,16 @@ TSP::TSP(std::string fileName)
 
     file.close();
 
+    //Preparação da matriz que armazenará os resultados já calculados
     rotas_Armazenadas.resize(nCidades);
     for (int i = 0; i < nCidades; i++){
         rotas_Armazenadas[i].resize(nCidades);
     }
 }
 
+/*
+* Método que prepara o caminho a ser calculado e chama a função recursiva, que efetivamente calcula as sub_rotas
+*/
 pair<string, double> TSP::calculaCaminho()
 {
     pair<string, double> res;
@@ -35,34 +41,34 @@ pair<string, double> TSP::calculaCaminho()
     }
     res = calculaSub_Rota(primeiraCidade, cidades);
 
+    //Remoção do último "-" na string do caminho
     res.first.pop_back();
     return res;
 }
 
+/**
+* Método recursivo que calcula a distância percorrida no sub-caminho
+* @param k é a cidade pela qual o caminho está passando no momento
+* @param caminho é o subconjunto de cidades que formarão o caminho
+**/
 pair<string, double> TSP::calculaSub_Rota(int k, std::set<int> caminho)
 {   
-    
-    for (int i = 0; i < caminho.size() * 10; i++)
-        std::cout<<" ";
-    std::cout << k << ", {";
-    for (int j : caminho){
-        std::cout << j << " ";
-    }
-    std::cout << "} \n";
-
+    // Se o tamanho do subconjunto que representa as cidades a serem atravessadas for 0,
+    //a distância entre k e a cidade inicial é retornada
     if(caminho.size() == 0){
 
-        std::cout<<"Base! ";
-        std::cout << calculaDistancia(k, primeiraCidade) << "\n";
         return { to_string(primeiraCidade) + "-" + to_string(k) + "-" , calculaDistancia(k, primeiraCidade) };
     }
 
     std::string chave_caminho = caminho_toString(caminho);
 
+    //Primeiro haverá a busca na matriz armazenda para verificar se já existe registro na matriz com
+    //esse conjunto de cidades e a cidade atual
     std::pair<string, double> resposta = buscaSub_rota(k, caminho.size(), chave_caminho);
-    
+   
+
+   //Caso não encontre, a função será chamada recursivamente para calcular o sub caminho inferior
     if(resposta.second == INFINITO){
-        std::cout << "Foi buscar!\n";
         double temp;
         std::pair<string, double> aux;
         for(int i : caminho){
@@ -78,44 +84,62 @@ pair<string, double> TSP::calculaSub_Rota(int k, std::set<int> caminho)
         }
         guardaSub_rota(k, caminho.size(), chave_caminho, resposta);
     }
-    else{
-        std::cout << "Achou!\n";
-    }
     
     return resposta;
 }
 
+/*
+*Método que retorna a distância euclidiana entre as cidades
+*/
 double TSP::calculaDistancia(int c1, int c2)
 {   
     return std::sqrt(pow(cidades[c1].x - cidades[c2].x, 2) + pow(cidades[c1].y - cidades[c2].y, 2));
 }
 
+/*
+*Método que busca a distância e o caminho armazenado na matriz de memorização.
+*A matriz guarda o menor caminho que passe pelos elementos de em c_buscado e por fim passa por k
+* @param k cidade pelo qual o caminho está passando no momento
+* @param tam tamanho do sub conjunto de cidades que forma o sub caminho
+* @param c_buscado chave do caminho a ser encontrado, contendo as cidades a serem atravessadas
+*/
 pair<string, double> TSP::buscaSub_rota(int k, int tam, std::string c_buscado)
 {   
-    
-    std::cout<<"Busca [" << k << "][" << tam <<"]: " << "\n";
     std::pair<string, double> res;
     res = rotas_Armazenadas[k][tam][c_buscado];
 
     if(res.second == 0){
         res.second = INFINITO;
     }
-    std::cout<<"\n";
+    
     return res;
 }
-
+/*
+*Método que busca a distância e o caminho armazenado na matriz de memorização
+* @param k cidade pelo qual o caminho está passando no momento
+* @param tam tamanho do sub conjunto de cidades que forma o sub caminho
+* @param c_novo chave do caminho a ser armazenado, contendo as cidades a serem atravessadas
+* @param rota par de caminho a ser atravessado (na ordem correta) e sua distância
+*/
 void TSP::guardaSub_rota(int k, int tam,std::string c_novo, std::pair<string, double> rota)
 {   
     rotas_Armazenadas[k][tam][c_novo] = rota;
 
 }
-
+/*
+* Retorno do mesmo conjunto, porém sem um de seus elementos
+* @param caminho conjunto de números que representam cidades
+* @param i elemento que será removido na cópia
+*/
 std::set<int> TSP::remove_elm_caminho(std::set<int> caminho, int i)
 {
     caminho.erase(i);
     return caminho;
 }
-
+/*
+* Transformação de um conjunto em uma string para poder ser utilizado como chave no std::unordered_map
+* @param caminho conjunto a ser convertido
+*/
 std::string TSP::caminho_toString(std::set<int> caminho)
 {
     std::string retorno = "";
@@ -126,8 +150,6 @@ std::string TSP::caminho_toString(std::set<int> caminho)
     
     if(retorno.size() > 1)
         retorno.pop_back();
-
-    std::cout<<"Chave:" + retorno + "\n";
 
     return retorno;
 }

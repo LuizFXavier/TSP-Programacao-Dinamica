@@ -5,17 +5,16 @@
 #include <utility>
 #include <unordered_map>
 #include "Cidade.hpp"
-#include "Sub_rota.hpp"
+
 #define INFINITO 0xffffffff
 
 using namespace std;
 class TSP
 {
 private:
-    int buscas = 50;
     vector<Cidade> cidades;
+    //Matriz que armazena os caminhos já calculados
     vector<vector<unordered_map<string, pair<string, double>>>> rotas_Armazenadas;
-    vector< vector <unordered_map<string, double>>> distancias_Armazenadas;
     int primeiraCidade = 0;
 
 public:
@@ -32,5 +31,4 @@ private:
     set<int> remove_elm_caminho(set<int> caminho, int i);
     string caminho_toString(set<int> caminho);
 
-    // unsigned numSubConj();
 };
