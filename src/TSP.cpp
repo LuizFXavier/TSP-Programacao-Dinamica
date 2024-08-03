@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include "TSP.hpp"
+#define PI 3.141592
 
 TSP::TSP(std::string fileName)
 {
@@ -12,11 +13,19 @@ TSP::TSP(std::string fileName)
     file >> nCidades;
 
     for(int i = 0; i < nCidades; i++){
-        int x, y;
+        double x, y;
         file >> x;
         file >> y;
 
-        cidades.push_back(Cidade{x,y});
+        int deg = (int)x;
+        double min = x - deg;
+        double radX = PI * (deg + 5.0 * min/3.0) / 180.0;
+
+        deg = (int)y;
+        min = y - deg;
+        double radY = PI * (deg + 5.0 * min/3.0) / 180.0;
+
+        cidades.push_back(Cidade{radX, radY});
     }
 
     file.close();
@@ -93,7 +102,19 @@ pair<string, double> TSP::calculaSub_Rota(int k, std::set<int> caminho)
 */
 double TSP::calculaDistancia(int c1, int c2)
 {   
-    return std::sqrt(pow(cidades[c1].x - cidades[c2].x, 2) + pow(cidades[c1].y - cidades[c2].y, 2));
+    double const RRR = 6378.388;
+
+    // double q1 = cos(cidades[c1].x - cidades[c2].x);
+    // double q2 = cos(cidades[c1].y - cidades[c2].y);
+    // double q3 = cos(cidades[c1].y + cidades[c2].y);
+
+    // return (int)(RRR * acos(0.5 * ((1.0 + q1)*q2 - (1.0 - q1)*q3) ) + 1.0);
+    double lt1 = cidades[c1].x;
+    double lt2 = cidades[c2].x;
+    double lg1 = cidades[c1].y;
+    double lg2 = cidades[c2].y;
+
+    return 2 * RRR * asin( sqrt(pow(sin( (lt1-lt2)/2 ), 2) + cos(lt1) * cos(lt2) * pow(sin((lg1-lg2)/2),2)));
 }
 
 /*
