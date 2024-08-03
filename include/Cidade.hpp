@@ -2,6 +2,6 @@
 //Representação das coordenadas da cidade
 struct Cidade
 {
-    int x;
-    int y;
+    double x;
+    double y;
 };
